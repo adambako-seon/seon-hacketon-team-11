@@ -25,6 +25,12 @@ public class PhoneRepository {
         return jdbcTemplate.query(sql, new Object[]{userId}, phoneRowMapper());
     }
 
+    public void saveOrUpdate(Phone phone) {
+        String sql = "INSERT INTO phone (user_id, phone_number) VALUES (?, ?) ON CONFLICT (id) DO UPDATE SET phone_number = EXCLUDED.phone_number";
+        jdbcTemplate.update(sql, phone.getUserId(), phone.getPhoneNumber());
+    }
+
+
     private RowMapper<Phone> phoneRowMapper() {
         return (rs, rowNum) -> Phone.builder()
           .id(rs.getLong("id"))

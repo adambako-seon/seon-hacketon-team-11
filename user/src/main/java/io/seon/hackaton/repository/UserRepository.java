@@ -33,18 +33,17 @@ public class UserRepository {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
 
-            // Load related shipping records
+            // Fetch related phones
+            List<Phone> phones = phoneRepository.findByUserId(user.getId());
+            user.setPhones(phones);
+
+            // Fetch related shippings
             List<Shipping> shippings = shippingRepository.findByUserId(user.getId());
             for (Shipping shipping : shippings) {
-                // Load related addresses for each shipping
                 List<Address> addresses = addressRepository.findByShippingId(shipping.getId());
                 shipping.setAddresses(addresses);
             }
             user.setShippings(shippings);
-
-            // Load related phone numbers
-            List<Phone> phones = phoneRepository.findByUserId(user.getId());
-            user.setPhones(phones);
 
             return Optional.of(user);
         }
@@ -57,6 +56,38 @@ public class UserRepository {
         String sql = "INSERT INTO users (username, full_name, place_of_birth, date_of_birth, created_by, updated_by, version) VALUES (?, ?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, user.getUsername(), user.getFullName(), user.getPlaceOfBirth(), user.getDateOfBirth(), user.getCreatedBy(), user.getUpdatedBy(), user.getVersion());
     }
+
+
+    public void update(User user) {
+        String sql = "UPDATE users SET username = ?, full_name = ?, place_of_birth = ?, date_of_birth = ?, updated_by = ?, updated_at = CURRENT_TIMESTAMP, version = ? WHERE id = ?";
+        jdbcTemplate.update(sql, user.getUsername(), user.getFullName(), user.getPlaceOfBirth(), user.getDateOfBirth(), user.getUpdatedBy(), user.getVersion(), user.getId());
+    }
+
+    public Optional<User> findByUsername(String username) {
+        String sql = "SELECT * FROM users WHERE username = ?";
+        Optional<User> userOptional =  jdbcTemplate.query(sql, new Object[]{username}, userRowMapper()).stream().findFirst();
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            // Fetch related phones
+            List<Phone> phones = phoneRepository.findByUserId(user.getId());
+            user.setPhones(phones);
+
+            // Fetch related shippings
+            List<Shipping> shippings = shippingRepository.findByUserId(user.getId());
+            for (Shipping shipping : shippings) {
+                List<Address> addresses = addressRepository.findByShippingId(shipping.getId());
+                shipping.setAddresses(addresses);
+            }
+            user.setShippings(shippings);
+
+            return Optional.of(user);
+        }
+
+        return Optional.empty();
+    }
+
 
     private RowMapper<User> userRowMapper() {
         return (rs, rowNum) -> User.builder()

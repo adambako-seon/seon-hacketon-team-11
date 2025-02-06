@@ -26,6 +26,12 @@ public class ShippingRepository {
         return jdbcTemplate.query(sql, new Object[]{userId}, shippingRowMapper());
     }
 
+    public void saveOrUpdate(Shipping shipping) {
+        String sql = "INSERT INTO shipping (user_id) VALUES (?) ON CONFLICT (id) DO UPDATE SET user_id = EXCLUDED.user_id";
+        jdbcTemplate.update(sql, shipping.getUserId());
+    }
+
+
     private RowMapper<Shipping> shippingRowMapper() {
         return (rs, rowNum) -> Shipping.builder()
           .id(rs.getLong("id"))

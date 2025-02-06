@@ -26,6 +26,12 @@ public class AddressRepository {
         return jdbcTemplate.query(sql, new Object[]{shippingId}, addressRowMapper());
     }
 
+    public void saveOrUpdate(Address address) {
+        String sql = "INSERT INTO address (shipping_id, country, street) VALUES (?, ?, ?) ON CONFLICT (id) DO UPDATE SET country = EXCLUDED.country, street = EXCLUDED.street";
+        jdbcTemplate.update(sql, address.getShippingId(), address.getCountry(), address.getStreet());
+    }
+
+
     private RowMapper<Address> addressRowMapper() {
         return (rs, rowNum) -> Address.builder()
           .id(rs.getLong("id"))
