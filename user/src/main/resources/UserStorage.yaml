@@ -20,7 +20,7 @@ paths:
               schema:
                 type: array
                 items:
-                  "$ref": "#/components/schemas/UserProfile"
+                  "$ref": "#/components/schemas/User"
     post:
       tags:
         - user-controller
@@ -29,14 +29,14 @@ paths:
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/AddUserEntry"
+              "$ref": "#/components/schemas/User"
       responses:
         '200':
           description: OK
           content:
             "application/json":
               schema:
-                "$ref": "#/components/schemas/UserProfile"
+                "$ref": "#/components/schemas/User"
 
   "/user-storage/profile/{userId}":
     get:
@@ -56,22 +56,45 @@ paths:
           content:
             "application/json":
               schema:
-                "$ref": "#/components/schemas/UserProfile"
-
-
+                "$ref": "#/components/schemas/User"
 
 components:
   schemas:
-    ## RESPONSE
-    GetUserProfileResponse:
+    User:
       type: object
       properties:
-        fullname:
+        id:
+          type: integer
+        username:
           type: string
-        phoneNumber:
+        fullName:
           type: string
-        address:
-          "$ref": "#/components/schemas/Address"
+        placeOfBirth:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        createdAt:
+          type: string
+          format: date-time
+        shippings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Shipping'
+        phones:
+          type: array
+          items:
+            $ref: '#/components/schemas/Phone'
+    Shipping:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Address'
     Address:
       type: object
       properties:
@@ -79,53 +102,9 @@ components:
           type: string
         street:
           type: string
-        zip:
-          type: string
-        other:
-          type: string
-    PhoneNumber:
+    Phone:
       type: object
       properties:
-        phone_number:
+        phoneNumber:
           type: string
-
-
-    UserProfile:
-      description: UserProfile
-      type: object
-      properties:
-        userId:
-          type: integer
-        username:
-          type: string
-        placeOfBirt:
-          type: string
-        dateOfBirth:
-          type: string
-        phones:
-          type: array
-          items:
-            $ref: "#/components/schemas/PhoneNumber"
-        shippings:
-          type: array
-          items:
-            $ref: "#/components/schemas/Address"
-
-    AddUserEntry:
-      description: UserEntryAddition
-      type: object
-      required:
-        - userId
-        - username
-      properties:
-        id:
-          type: number
-        username:
-          type: string
-        userFullname:
-          type: string
-        phone_number:
-          $ref: "#/components/schemas/PhoneNumber"
-        address:
-          $ref: "#/components/schemas/Address"
 

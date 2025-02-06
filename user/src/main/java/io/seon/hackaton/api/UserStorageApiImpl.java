@@ -5,28 +5,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import io.seon.hackaton.dto.UserDTO;
 import io.seon.hackaton.entity.User;
-import io.seon.hackaton.model.AddUserEntry;
-import io.seon.hackaton.model.UserProfile;
 import io.seon.hackaton.repository.UserRepository;
+import io.seon.hackaton.service.UserService;
+
 
 @Component
 public class UserStorageApiImpl implements UserStorageApiDelegate {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
     private ModelMapper modelMapper = new ModelMapper();
 
 
     @Override
-    public ResponseEntity<UserProfile> getUserProfile(Integer userId) {
+    public ResponseEntity<io.seon.hackaton.model.User> getUserProfile(Integer userId) {
         return ResponseEntity.ok(modelMapper.map(
-          userRepository.findById(userId), UserProfile.class));
+          userService.findById(userId.longValue()), io.seon.hackaton.model.User.class));
     }
 
     @Override
-    public ResponseEntity<UserProfile> createUserProfile(AddUserEntry addUserEntry) {
-        User user = userRepository.save(modelMapper.map(addUserEntry, User.class));
-        return ResponseEntity.ok(modelMapper.map(user, UserProfile.class));
+    public ResponseEntity<io.seon.hackaton.model.User> createUserProfile(io.seon.hackaton.model.User openApiUser) {
+
+        UserDTO userDTO = modelMapper.map(openApiUser, UserDTO.class);
+
+        // Pass DTO to service
+        UserDTO savedUser = userService.saveUser(userDTO);
+        return ResponseEntity.ok(modelMapper.map(savedUser, io.seon.hackaton.model.User.class));
     }
+
 }

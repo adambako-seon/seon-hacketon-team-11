@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,10 +28,6 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "shipping_id", nullable = false)
-    private Shipping shipping;
-
     @Column(nullable = false)
     private String country;
 
@@ -47,10 +44,12 @@ public class Address {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
+    @Version
+    private int version;
+
     private String updatedBy = "admin";
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    private int version = 1;
 }
