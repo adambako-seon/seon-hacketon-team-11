@@ -19,17 +19,11 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", schema = "public")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
-// ROB EDIT GROW
-//  DI GOW
-
-//ROBERT
-//
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

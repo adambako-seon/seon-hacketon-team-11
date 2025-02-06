@@ -118,9 +118,11 @@ components:
         - userId
         - username
       properties:
-        userId:
-          type: string
+        id:
+          type: number
         username:
+          type: string
+        userFullname:
           type: string
         phone_number:
           $ref: "#/components/schemas/PhoneNumber"
