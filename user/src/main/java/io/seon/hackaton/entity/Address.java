@@ -1,7 +1,10 @@
 package io.seon.hackaton.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,8 +31,9 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shipping_id", nullable = false)
+    @JsonBackReference
     private Shipping shipping;
 
     @Column(nullable = false)
@@ -48,12 +52,11 @@ public class Address {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    @Version
-    private int version;
-
     private String updatedBy = "admin";
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    private int version = 1;
 }
+

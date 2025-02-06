@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import io.seon.hackaton.dto.AddressDTO;
 import io.seon.hackaton.dto.PhoneDTO;
 import io.seon.hackaton.dto.ShippingDTO;
 import io.seon.hackaton.dto.UserDTO;
@@ -35,12 +36,19 @@ public class UserService {
     }
 
     public UserDTO findById(Long id) {
-        User user = userRepository.findById(id.intValue());
+        User user = userRepository.findByIdWithRelations(id.intValue())
+          .orElseThrow(() -> new RuntimeException("User not found"));
 
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 
         userDTO.setShippings(user.getShippings().stream()
-          .map(s -> modelMapper.map(s, ShippingDTO.class))
+          .map(s -> {
+              ShippingDTO shippingDTO = modelMapper.map(s, ShippingDTO.class);
+              shippingDTO.setAddresses(s.getAddresses().stream()
+                .map(a -> modelMapper.map(a, AddressDTO.class))
+                .collect(Collectors.toList()));
+              return shippingDTO;
+          })
           .collect(Collectors.toList()));
 
         userDTO.setPhones(user.getPhones().stream()
@@ -52,13 +60,16 @@ public class UserService {
 
     @Transactional
     public UserDTO saveUser(UserDTO userDTO) {
-        User user = modelMapper.map(userDTO, User.class);
+        User user = userRepository.findByUsername(userDTO.getUsername());
 
-        user.getShippings().forEach(shipping -> shipping.getAddresses().forEach(address -> address.setShipping(shipping)));
-        user.getShippings().forEach(shipping -> shipping.setUser(user));
+        modelMapper.map(userDTO, user);
+
+        user.getShippings().forEach(shipping -> {
+            shipping.setUser(user);
+            shipping.getAddresses().forEach(address -> address.setShipping(shipping));
+        });
         user.getPhones().forEach(phone -> phone.setUser(user));
-
-        User savedUser = userRepository.saveAndFlush(user);
+        User savedUser = userRepository.save(user);
         return modelMapper.map(savedUser, UserDTO.class);
     }
 

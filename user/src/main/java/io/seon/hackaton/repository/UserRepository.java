@@ -14,9 +14,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findById(Integer id);
 
+
     @Query("SELECT u FROM User u " +
       "LEFT JOIN FETCH u.shippings " +
       "LEFT JOIN FETCH u.phones " +
       "WHERE u.id = :id")
     Optional<User> findByIdWithRelations(@Param("id") Integer id);
+
+
 }

@@ -1,7 +1,9 @@
 package io.seon.hackaton.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,13 +28,13 @@ import org.hibernate.annotations.UpdateTimestamp;
 @AllArgsConstructor
 @Builder
 public class Phone {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     @Column(nullable = false)
@@ -45,12 +47,11 @@ public class Phone {
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    @Version
-    private int version;
-
     private String updatedBy = "admin";
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    private int version = 1;
 }
+
