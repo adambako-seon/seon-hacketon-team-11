@@ -1,0 +1,129 @@
+openapi: 3.0.3
+info:
+  title: OpenAPI definition
+  version: v1
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+paths:
+  "/user-storage/profiles":
+    get:
+      tags:
+        - user-controller
+      operationId: getProfiles
+      description: returns all the available user profiles
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/UserProfile"
+    post:
+      tags:
+        - user-controller
+      operationId: createUserProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/AddUserEntry"
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/UserProfile"
+
+  "/user-storage/profile/{userId}":
+    get:
+      tags:
+        - user-controller
+      operationId: getUserProfile
+      description: returns user's profile
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            "application/json":
+              schema:
+                "$ref": "#/components/schemas/UserProfile"
+
+
+
+components:
+  schemas:
+    ## RESPONSE
+    GetUserProfileResponse:
+      type: object
+      properties:
+        fullname:
+          type: string
+        phoneNumber:
+          type: string
+        address:
+          "$ref": "#/components/schemas/Address"
+    Address:
+      type: object
+      properties:
+        country:
+          type: string
+        street:
+          type: string
+        zip:
+          type: string
+        other:
+          type: string
+    PhoneNumber:
+      type: object
+      properties:
+        phone_number:
+          type: string
+
+
+    UserProfile:
+      description: UserProfile
+      type: object
+      properties:
+        userId:
+          type: integer
+        username:
+          type: string
+        placeOfBirt:
+          type: string
+        dateOfBirth:
+          type: string
+        phones:
+          type: array
+          items:
+            $ref: "#/components/schemas/PhoneNumber"
+        shippings:
+          type: array
+          items:
+            $ref: "#/components/schemas/Address"
+
+    AddUserEntry:
+      description: UserEntryAddition
+      type: object
+      required:
+        - userId
+        - username
+      properties:
+        userId:
+          type: string
+        username:
+          type: string
+        phone_number:
+          $ref: "#/components/schemas/PhoneNumber"
+        address:
+          $ref: "#/components/schemas/Address"
+
