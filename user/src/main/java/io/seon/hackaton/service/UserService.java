@@ -1,7 +1,6 @@
 package io.seon.hackaton.service;
 
 import jakarta.transaction.Transactional;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -9,8 +8,6 @@ import org.springframework.stereotype.Service;
 import io.seon.hackaton.dto.PhoneDTO;
 import io.seon.hackaton.dto.ShippingDTO;
 import io.seon.hackaton.dto.UserDTO;
-import io.seon.hackaton.entity.Phone;
-import io.seon.hackaton.entity.Shipping;
 import io.seon.hackaton.entity.User;
 import io.seon.hackaton.repository.AddressRepository;
 import io.seon.hackaton.repository.PhoneRepository;
@@ -57,25 +54,9 @@ public class UserService {
     public UserDTO saveUser(UserDTO userDTO) {
         User user = modelMapper.map(userDTO, User.class);
 
-        if (userDTO.getId() != null) {
-            // Fetch the existing user to prevent detached entity issues
-//            user = userRepository.findByIdWithRelations(userDTO.getId().intValue()).get();
-
-            // Map only non-null fields
-//            modelMapper.map(userDTO, user);
-        } else {
-            user = modelMapper.map(userDTO, User.class);
-        }
-
-        // Ensure child relationships are properly set
-
-        user.setVersion(1);
-        user.getShippings().forEach(shipping -> shipping.setVersion(1));
-        user.getShippings().forEach(shipping -> shipping.setId(19L));
-        user.getShippings().forEach(shipping -> shipping.getAddresses().forEach(address -> address.setVersion(1)));
-        user.getShippings().forEach(shipping -> shipping.getAddresses().forEach(address -> address.setId(19L)));
-        user.getPhones().forEach(phone -> phone.setVersion(1));
-        user.getPhones().forEach(phone -> phone.setId(19L));
+        user.getShippings().forEach(shipping -> shipping.getAddresses().forEach(address -> address.setShipping(shipping)));
+        user.getShippings().forEach(shipping -> shipping.setUser(user));
+        user.getPhones().forEach(phone -> phone.setUser(user));
 
         User savedUser = userRepository.saveAndFlush(user);
         return modelMapper.map(savedUser, UserDTO.class);
