@@ -1,12 +1,13 @@
 package io.seon.hackaton.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 
 @Entity
 @Table(name = "users")
@@ -37,14 +37,14 @@ public class User {
     private LocalDate dateOfBirth;
 
     private String createdBy = "admin";
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
     private String updatedBy = "admin";
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt = LocalDateTime.now();
     private int version = 1;
 
-    @Transient
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Phone> phones;
 
-    @Transient
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true) //FetchType?
     private List<Shipping> shippings;
 }

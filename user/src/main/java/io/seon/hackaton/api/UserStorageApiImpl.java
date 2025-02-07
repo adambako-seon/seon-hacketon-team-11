@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import io.seon.hackaton.dto.UserDTO;
+import io.seon.hackaton.entity.User;
 import io.seon.hackaton.repository.UserRepository;
 import io.seon.hackaton.service.UserService;
 
@@ -29,12 +30,10 @@ public class UserStorageApiImpl implements UserStorageApiDelegate {
 
     @Override
     public ResponseEntity<io.seon.hackaton.model.User> createUserProfile(io.seon.hackaton.model.User openApiUser) {
-
         UserDTO userDTO = modelMapper.map(openApiUser, UserDTO.class);
 
-        // Pass DTO to service
-        userService.saveOrUpdateUser(userDTO);
-        return ResponseEntity.ok().body(modelMapper.map(new UserDTO(), io.seon.hackaton.model.User.class));
+        User response = userService.saveOrUpdate(userDTO);
+        return ResponseEntity.ok().body(modelMapper.map(response, io.seon.hackaton.model.User.class));
     }
 
 }
